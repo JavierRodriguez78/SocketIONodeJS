@@ -15,23 +15,28 @@ const io = socketIO(server);
 
 io.on('connection',(socket)=>{
     
-    console.log("Nuevo usuario conectado");
+    var parametros= { sala: 'riberasalud'};
 
-    
-    socket.on('clientNewMessage',(msg)=>console.log(msg));
-    
-    socket.emit('serverNewMessage',{
-    from: 'servidor',
-    text:'Es una prueba',
-    createdAt:192140921
-    });
+    socket.on('join',(parametros, callback)=>{
+        console.log("Entra en le join");
+        if(typeof parametros.sala !=='string'){
+            console.log("error");
+            callback("no es un string")
+        }else{
+            console.log("Accede al join " +parametros.sala);
+            socket.join(parametros.sala);
+            console.log(socket.id);
+            io.to(parametros.sala).emit('serverNewMessage',{
+                from: 'Admin',
+                text: 'Un nuevo usario se ha unido a la sala '+ parametros.sala,
+                createdAt: new Date().getTime()
+            });
 
-    socket.on('clientNewMessage',(msg)=>{
-        io.emit('serverNewMessage',"WHOLALAAA");
-    });
 
-    
 
+        }
+    })
+  
 });
 
 
